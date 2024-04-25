@@ -26,6 +26,7 @@ export class UserService {
       const data = await this.userModel.aggregate([
         { $match: { isDeleted: false } },
       ]);
+      console.log(data);
 
       return data;
     } catch (error) {}

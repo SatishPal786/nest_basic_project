@@ -4,6 +4,7 @@ export class CreateUserDto {
   email: String;
   password: String;
   phone: String;
+  otp: Number;
   city: String;
   isOnline: Boolean;
   isDeleted: Boolean;

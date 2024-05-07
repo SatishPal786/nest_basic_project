@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as bcryptjs from 'bcryptjs';
 @Injectable()
 export class UserService {
   constructor(
@@ -12,10 +13,26 @@ export class UserService {
   ) {}
   async create(createUserDto: CreateUserDto) {
     try {
+      const password = await bcryptjs.hash(createUserDto.password, 10);
+      createUserDto.password = password;
+
       const data = await this.userModel.create(createUserDto);
       if (data) {
         return 'user created successfully';
+      } else {
+        return 'Something went wrong';
       }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async loginUser(email: string, password: string) {
+    try {
+      console.log(email, 'email');
+
+      const user = await this.userModel.findOne({ email: email });
+      console.log(user, 'user');
     } catch (error) {
       throw new Error(error);
     }
@@ -26,14 +43,27 @@ export class UserService {
       const data = await this.userModel.aggregate([
         { $match: { isDeleted: false } },
       ]);
-      console.log(data);
-
-      return data;
-    } catch (error) {}
+      if (data.length > 0) {
+        return data;
+      } else {
+        return 'Data not found';
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    try {
+      const data = await this.userModel.findOne({ where: { _id: id } });
+      if (data) {
+        return data;
+      } else {
+        return 'Record not found';
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

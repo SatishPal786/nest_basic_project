@@ -9,12 +9,14 @@ export class User {
   firstName: string;
   @Prop()
   lastName: string;
-  @Prop()
+  @Prop({ unique: true })
   email: string;
   @Prop()
   password: string;
   @Prop()
   phone: string;
+  @Prop()
+  otp: number;
   @Prop()
   city: string;
   @Prop({ default: false })
